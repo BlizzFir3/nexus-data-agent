@@ -1,117 +1,110 @@
-# Nexus Data Agent
+# 🧠 Nexus Data Agent
 
-Nexus Data Agent est une API RESTful conçue pour interfacer un agent conversationnel (LLM) avec une base de données d'entreprise via l'utilisation du Tool Calling (Function Calling). 
+> **An Enterprise-Ready AI Agent demonstrating LLM Tool Calling, Strict Data Validation, and Secure DevOps Practices.**
 
-Ce micro-service démontre une architecture robuste et fragmentée, intégrant la validation stricte des données, la gestion sécurisée des secrets et un pipeline CI/CD moderne.
+Nexus Data Agent is a modern Node.js backend application that acts as an intelligent bridge between natural language queries and a business database. Built with Fastify and TypeScript, it leverages the **Groq API** (OpenAI SDK compatible) to perform autonomous **Tool Calling**, allowing the AI to route queries to internal database services securely.
 
-## 🛠️ Stack Technique
+## 🚀 Key Features & Architecture
 
-- **Backend** : Node.js 20, Fastify, TypeScript
-- **Validation & Typage** : Zod
-- **Intelligence Artificielle** : API OpenAI (Tool Calling)
-- **Infrastructure & DevOps** : Docker (Multi-stage build), Docker Compose, GitHub Actions (CI)
-- **Sécurité** : @dotenvx/dotenvx (Chiffrement des variables d'environnement dans Git)
-- **Qualité de code** : ESLint, Prettier, Conventionnal Commits
+* **Agentic Tool Calling:** The LLM does not hallucinate data. It is restricted to using predefined JSON-schema tools to query local business services.
+* **Modern Node.js (ESM):** Built strictly with ECMAScript Modules (`"type": "module"`) using `NodeNext` resolution.
+* **Strict Validation & "Fail Fast":** 
+  * API payloads are validated at runtime using **Zod**.
+  * Environment variables are parsed at startup. The app will refuse to boot if required secrets are missing.
+* **Secure Secrets Management:** Powered by `@dotenvx/dotenvx`. The `.env` file is safely encrypted and versioned in Git, ensuring seamless team collaboration and CI/CD integration without exposing plaintext keys.
+* **DevOps Ready:** Fully containerized using a multi-stage `Dockerfile` and `docker-compose.yml`. CI/CD pipelines are configured via GitHub Actions for automated linting and building.
 
-## 📂 Architecture
+## 🛠️ Tech Stack
 
-Le projet respecte une séparation stricte des responsabilités (Separation of Concerns) :
+* **Backend:** Node.js 20, Fastify, TypeScript
+* **AI & LLM:** Groq API (`openai/gpt-oss-20b`), OpenAI Node SDK
+* **Validation:** Zod
+* **DevOps & Tooling:** Docker, Docker Compose, GitHub Actions, ESLint (Flat Config), Prettier, Dotenvx
 
-```text
-src/
-├── config/       # Validation des variables d'environnement (Zod)
-├── controllers/  # Logique des routes HTTP
-├── routes/       # Définition des endpoints Fastify
-├── services/     # Logique métier (LLM, Base de données)
-├── tools/        # Fonctions isolées exposées au LLM (Tool Calling)
-└── types/        # Interfaces TypeScript globales
+---
 
-```
+## 💻 Getting Started
 
-## 🚀 Installation & Démarrage
+### Prerequisites
 
-### Prérequis
+* [Node.js](https://nodejs.org/) (v20+)
+* [Docker](https://www.docker.com/) & Docker Compose
+* A [Groq API Key](https://console.groq.com/) (Free)
 
-* Node.js (v20+)
-* Docker & Docker Compose
-* Une clé API OpenAI valide
-
-### 1. Cloner et installer
-
+### 1. Clone the repository
 ```bash
-git clone [https://github.com/blizzfir3/nexus-data-agent.git](https://github.com/blizzfir3/nexus-data-agent.git)
+git clone https://github.com/YOUR_USERNAME/nexus-data-agent.git
 cd nexus-data-agent
-npm install
-
 ```
 
-### 2. Configuration des secrets
-
-Le projet utilise `dotenvx` pour gérer les secrets. Initialisez vos variables (elles seront chiffrées automatiquement) :
+### 2. Configure Secrets (Dotenvx)
+Since the `.env` file is encrypted, you need to inject your Groq API key securely.
+Run the following command (replace `gsk_YOUR_API_KEY` with your actual key):
 
 ```bash
-npx dotenvx set PORT 3000
-npx dotenvx set HOST 0.0.0.0
-npx dotenvx set NODE_ENV development
-npx dotenvx set OPENAI_API_KEY sk-votre-cle-api
+npx @dotenvx/dotenvx set GROQ_API_KEY gsk_YOUR_API_KEY
+```
+*This command will update your local `.env.keys` (ignored by Git) and securely encrypt the variable in the `.env` file.*
 
+---
+
+## 🐳 Run with Docker (Recommended)
+
+The easiest way to run the application is via Docker Compose. It will automatically load the encrypted environment variables.
+
+```bash
+docker compose up --build -d
 ```
 
-### 3. Lancer l'application
+View the logs to ensure the server started successfully:
+```bash
+docker compose logs -f
+```
 
-**En mode développement (avec rechargement à chaud) :**
+---
 
+## 👨‍💻 Run Locally (Development)
+
+Install dependencies:
+```bash
+npm install
+```
+
+Start the development server with live reload:
 ```bash
 npm run dev
-
 ```
 
-**En production (via Docker) :**
+---
 
-```bash
-docker compose up -d
+## 🎯 Usage / API Testing
 
-```
+Once the server is running (either locally or via Docker on port `3000`), you can test the Agent's ability to query the internal mock database using natural language.
 
-## 📡 Utilisation (API)
-
-**Endpoint :** `POST /api/chat`
-
-**Requête :**
+**Send a POST request to the Chat endpoint:**
 
 ```bash
 curl -X POST http://localhost:3000/api/chat \
-  -H "Content-Type: application/json" \
-  -d '{"message": "Quel est le client qui a généré le plus de chiffre d'affaires ?"}'
-
+-H "Content-Type: application/json" \
+-d '{"message": "Trouve les informations sur le client nommé Umbrella Corp."}'
 ```
 
-**Réponse attendue :**
-
+**Expected AI Response:**
 ```json
 {
-  "response": "Le client ayant généré le plus de chiffre d'affaires est l'entreprise XYZ avec un total de 45 000€ sur l'année en cours."
+  "response": "Voici les informations disponibles pour le client **Umbrella Corp** :\n\n- **ID** : 4 \n- **Nom** : Umbrella Corp \n- **Adresse e-mail** : admin@umbrella.com \n- **Total dépensé** : 3 400 € \n\nSi vous avez besoin d'autres détails, n'hésitez pas à demander."
 }
-
 ```
 
-## 📜 Qualité et CI/CD
+## 🏗️ Project Structure
 
-Le projet intègre un pipeline GitHub Actions qui valide automatiquement :
-
-* La compilation TypeScript (`tsc --noEmit`)
-* Les règles de linting (`eslint`)
-* Le formatage du code (`prettier`)
-
-```
-
-***
-
-**Rappel Git :** C'est le bon moment pour faire un commit atomique afin de valider l'ajout du README.
-
-```powershell
-git add README.md
-git commit -m "docs: add comprehensive project README for portfolio"
-git push
-
+```text
+src/
+├── config/        # Environment validation (Zod)
+├── controllers/   # Route handlers (HTTP logic)
+├── routes/        # Fastify endpoints definition
+├── services/      # Business logic (LLM Orchestration, Mock DB)
+├── tools/         # JSON Schemas for LLM Tool Calling
+├── types/         # TypeScript definitions
+└── server.ts      # Fastify application entry point
 ```
