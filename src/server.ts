@@ -1,5 +1,6 @@
 import fastify, { FastifyInstance } from 'fastify';
 import { env } from './config/env.js';
+import { chatRoutes } from './routes/chat.routes.js';
 
 // Initialisation de Fastify avec un logger adapté à l'environnement
 const server: FastifyInstance = fastify({
@@ -17,6 +18,8 @@ const server: FastifyInstance = fastify({
 
 // Route de vérification de santé (Healthcheck)
 server.get('/health', async () => {
+  // Enregistrement des routes de l'API
+  server.register(chatRoutes, { prefix: '/api' });
   return { status: 'ok', environment: env.NODE_ENV, timestamp: new Date().toISOString() };
 });
 

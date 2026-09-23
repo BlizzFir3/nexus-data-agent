@@ -10,7 +10,7 @@ const envSchema = z.object({
 const _env = envSchema.safeParse(process.env);
 
 if (!_env.success) {
-  console.error('❌ Erreur critique : Variables d\'environnement invalides');
+  console.error("❌ Erreur critique : Variables d'environnement invalides");
   console.error(_env.error.format());
   process.exit(1);
 }
