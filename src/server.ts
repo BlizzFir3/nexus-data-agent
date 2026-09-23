@@ -1,5 +1,6 @@
 import fastify, { FastifyInstance } from 'fastify';
 import { env } from './config/env.js';
+import chatRoutes from './routes/chat.routes.js';
 
 // Initialisation de Fastify avec un logger adapté à l'environnement
 const server: FastifyInstance = fastify({
@@ -14,6 +15,14 @@ const server: FastifyInstance = fastify({
         : undefined,
   },
 });
+
+// Hook pour confirmer l'enregistrement des routes au démarrage
+server.addHook('onRoute', (routeOptions) => {
+  server.log.info(`Route enregistrée : ${routeOptions.method} ${routeOptions.url}`);
+});
+
+// Enregistrement global des routes de l'API (doit être au niveau racine)
+server.register(chatRoutes, { prefix: '/api' });
 
 // Route de vérification de santé (Healthcheck)
 server.get('/health', async () => {
