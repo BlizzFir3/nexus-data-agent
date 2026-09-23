@@ -12,7 +12,7 @@ export class LlmService {
 
   constructor() {
     // Redirection transparente du SDK OpenAI vers les serveurs de Groq
-    this.openai = new OpenAI({ 
+    this.openai = new OpenAI({
       baseURL: 'https://api.groq.com/openai/v1',
       apiKey: env.GROQ_API_KEY,
     });
@@ -74,10 +74,12 @@ export class LlmService {
         messages,
       });
 
-      return finalResponse.choices[0].message.content || 'Désolé, je n\'ai pas pu formuler de réponse.';
+      return (
+        finalResponse.choices[0].message.content || "Désolé, je n'ai pas pu formuler de réponse."
+      );
     }
 
-    return responseMessage.content || 'Désolé, je n\'ai pas pu générer de réponse.';
+    return responseMessage.content || "Désolé, je n'ai pas pu générer de réponse.";
   }
 }
 
