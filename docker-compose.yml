@@ -1,0 +1,17 @@
+services:
+  api:
+    build: 
+      context: .
+      target: development
+    container_name: nexus_agent_api
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    env_file:
+      # Injecte la clé privée localement. En prod, cette clé sera passée via l'environnement système.
+      - .env.keys 
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+    volumes:
+      - ./src:/app/src
+    command: npm run dev
