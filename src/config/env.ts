@@ -4,7 +4,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(3000),
   HOST: z.string().default('0.0.0.0'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  OPENAI_API_KEY: z.string().min(1, 'La clé API OpenAI est requise'),
+  GROQ_API_KEY: z.string().min(1, 'La clé API Groq est requise'),
 });
 
 const _env = envSchema.safeParse(process.env);

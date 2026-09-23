@@ -1,8 +1,8 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { ChatRequestSchema } from '../types/chat.types.js';
+import { llmService } from '../services/llm.service.js';
 
 export const handleChat = async (request: FastifyRequest, reply: FastifyReply) => {
-  // Validation stricte du body avec Zod
   const parsed = ChatRequestSchema.safeParse(request.body);
 
   if (!parsed.success) {
@@ -14,9 +14,18 @@ export const handleChat = async (request: FastifyRequest, reply: FastifyReply) =
 
   const { message } = parsed.data;
 
-  // TODO: Appel au LLM et Tool Calling (Prochaine étape)
+  try {
+    // Délégation au service LLM
+    const aiResponse = await llmService.processQuery(message);
 
-  return reply.status(200).send({
-    response: `Message reçu : "${message}". L'intégration OpenAI est prête à être connectée.`,
-  });
+    return reply.status(200).send({
+      response: aiResponse,
+    });
+  } catch (error) {
+    request.log.error(error);
+    return reply.status(500).send({
+      error: 'Internal Server Error',
+      message: "Impossible de joindre le service d'intelligence artificielle.",
+    });
+  }
 };
