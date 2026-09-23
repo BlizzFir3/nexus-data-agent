@@ -15,7 +15,6 @@ export const handleChat = async (request: FastifyRequest, reply: FastifyReply) =
   const { message } = parsed.data;
 
   try {
-    // Délégation au service LLM
     const aiResponse = await llmService.processQuery(message);
 
     return reply.status(200).send({

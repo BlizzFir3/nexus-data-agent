@@ -25,10 +25,10 @@ export class LlmService {
     ];
 
     // Remplacement du modèle par un modèle open-source supportant le Tool Calling
-    const model = 'llama-3.3-70b-versatile';
+    const model = 'openai/gpt-oss-20b';
 
     const response = await this.openai.chat.completions.create({
-      model, // <-- Modification ici
+      model,
       messages,
       tools: [getCustomerByNameSchema, getTopCustomerSchema],
       tool_choice: 'auto',
@@ -70,7 +70,7 @@ export class LlmService {
       }
 
       const finalResponse = await this.openai.chat.completions.create({
-        model, // <-- Modification ici
+        model,
         messages,
       });
 
